@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: Run PowerShell Core script
+      command: /usr/bin/pwsh /var/lib/awx/projects/MSP/shutdown_uat.ps1 -tagname "{{ item }}" 
+      with_items: "{{ ansible_tag_name }}"
+      ignore_errors: yes
+      changed_when: false
+      register: powershell_output
+
+    - name: Current configuration
+      command: /usr/bin/pwsh /var/lib/awx/projects/MSP/current_stat.ps1 -tagname "{{ item }}"
+      with_items: "{{ ansible_tag_name }}"
+      register: current_output
+
+    - debug:
+        msg: "{{ current_output }}"
+    #    var: "powershell_output.stdout.split('\n')"
